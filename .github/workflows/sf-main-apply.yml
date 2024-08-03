@@ -4,13 +4,13 @@ on:
       - main
     paths:
       - '**.tf'
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
-    paths:
-      - '**.tf'
+  # pull_request:
+  #   types:
+  #     - closed
+  #   branches:
+  #     - main
+  #   paths:
+  #     - '**.tf'
 
 jobs:
   if_merged:
