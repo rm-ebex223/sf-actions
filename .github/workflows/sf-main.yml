@@ -1,14 +1,16 @@
 name: "Snowflake workflow - main"
 
 on:
-#  push:
+  push:
+    paths:
+      - '**.tf'
+    branches:
+      - main
   pull_request:
     paths-ignore:
       - 'README.md'
       - '.github/workflows/*'
       - '.gitignore'
-    branches:
-      - main
 
 jobs:
   snowflake-terraform-demo:
@@ -71,6 +73,6 @@ jobs:
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true
-        run: terraform apply -auto-approve
+#      - name: Terraform Apply
+#        if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true
+#        run: terraform apply -auto-approve
