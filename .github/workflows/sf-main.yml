@@ -1,4 +1,4 @@
-name: "Snowflake Terraform Demo Workflow"
+name: "Snowflake workflow - main"
 
 on:
   push:
@@ -8,14 +8,14 @@ on:
 
 jobs:
   snowflake-terraform-demo:
-    name: "Snowflake Terraform Demo Job"
+    name: "Snowflake job - main"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
@@ -34,7 +34,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        run: terraform plan -no-color
+        run: terraform plan
         continue-on-error: true
 
       - uses: actions/github-script@0.9.0
@@ -44,10 +44,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            const output = `
+            #### Terraform Plan \`${{ steps.plan.outcome }}\`
             
             <details><summary>Show Plan</summary>
             
