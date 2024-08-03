@@ -16,7 +16,6 @@ terraform {
 }
 
 provider "snowflake" {
-  role     = "TERRAFORM_DEPLOY"
 }
 
 resource "snowflake_database" "demo_db" {
