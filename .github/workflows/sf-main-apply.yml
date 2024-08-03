@@ -19,10 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
   
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
   
@@ -48,4 +48,31 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply 
+        id: apply
         run: terraform apply -auto-approve
+
+      - uses: actions/github-script@v7
+        if: steps.apply.outcome == 'success' && github.event.pull_request.merged == true
+        env:
+          PLAN: "terraform\n${{ steps.apply.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Plan \`${{ steps.apply.outcome }}\`
+          
+            <details><summary>Show Plan</summary>
+          
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+          
+            </details>
+          
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+          
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output 
+            })
