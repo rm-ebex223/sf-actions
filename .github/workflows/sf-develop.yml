@@ -2,8 +2,12 @@ name: "Snowflake - main"
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
+      - '.github/workflows/*'
+      - '.gitignore'
     branches:
-      - main
+      - develop
   pull_request:
 
 jobs:
