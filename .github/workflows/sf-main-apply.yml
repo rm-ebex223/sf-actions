@@ -1,0 +1,16 @@
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+    paths:
+      - '**.tf'
+
+jobs:
+  if_merged:
+    if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - name: Terraform Apply 
+      run: terraform apply -auto-approve
