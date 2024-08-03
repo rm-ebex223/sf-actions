@@ -1,14 +1,16 @@
 name: "Snowflake workflow - main"
 
 on:
-#  push:
+  push:
+    paths:
+      - '**.tf'
+    branches:
+      - main
   pull_request:
     paths-ignore:
       - 'README.md'
       - '.github/workflows/*'
       - '.gitignore'
-    branches:
-      - main
 
 jobs:
   snowflake-terraform-demo:
