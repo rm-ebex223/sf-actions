@@ -2,6 +2,10 @@ name: "Snowflake workflow - main"
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
+      - '.github/workflows/*'
+      - '.gitignore'
     branches:
       - main
   pull_request:
