@@ -4,13 +4,17 @@ on:
   push:
     paths:
       - '**.tf'
+    paths-ignore:
+       - 'README.md'
+       - '.github/workflows/*'
+       - '.gitignore'
     branches:
       - main
-  pull_request:
-    paths-ignore:
-      - 'README.md'
-      - '.github/workflows/*'
-      - '.gitignore'
+#  pull_request:
+#    paths-ignore:
+#      - 'README.md'
+#      - '.github/workflows/*'
+#      - '.gitignore'
 
 jobs:
   snowflake-terraform-demo:
