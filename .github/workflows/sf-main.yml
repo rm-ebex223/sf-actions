@@ -1,7 +1,7 @@
 name: "Snowflake workflow - main"
 
 on:
-  push:
+#  push:
   pull_request:
     paths-ignore:
       - 'README.md'
