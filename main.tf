@@ -1,8 +1,8 @@
 terraform {
   required_providers {
     snowflake = {
-      source  = "chanzuckerberg/snowflake"
-      version = "0.25.17"
+      source  = "Snowflake-Labs/snowflake"
+      version = "~> 0.93.0"
     }
   }
 
@@ -16,6 +16,7 @@ terraform {
 }
 
 provider "snowflake" {
+  role     = "TERRAFORM_DEPLOY"
 }
 
 resource "snowflake_database" "demo_db" {
