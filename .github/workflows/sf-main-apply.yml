@@ -9,7 +9,8 @@ on:
 
 jobs:
   if_merged:
-    if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true
+#    if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true
+    if: github.ref == 'refs/heads/main' && ${{ github.event_name == 'push' || github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     steps:
     - name: Terraform Apply 
