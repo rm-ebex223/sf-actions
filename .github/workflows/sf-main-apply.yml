@@ -57,7 +57,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `#### \`terraform apply\` status: \`${{ steps.apply.outcome }}\`
+            const output = `#### STATUS - *terraform apply*: \`${{ steps.apply.outcome }}\`
           
             <details><summary>Apply output</summary>
             
