@@ -4,18 +4,17 @@ on:
       - main
     paths:
       - '**.tf'
-  # pull_request:
-  #   types:
-  #     - closed
-  #   branches:
-  #     - main
-  #   paths:
-  #     - '**.tf'
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+    paths:
+      - '**.tf'
 
 jobs:
-  if_merged:
-#    if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true
-    if: github.ref == 'refs/heads/main' && ${{ github.event_name == 'push' || github.event.pull_request.merged == true }}
+  main_push_no_pr:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.event.number == null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -50,32 +49,3 @@ jobs:
       - name: Terraform Apply 
         id: apply
         run: terraform apply -auto-approve
-
-      - uses: actions/github-script@0.9.0
-#        if: github.event_name == 'pull_request'
-        env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-          PR_NUM: ${{ github.event.number }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Plan \`${{ steps.plan.outcome }}\`
-            `#### Terraform Plan \`${{ steps.apply.outcome }}\`
-            `#### Terraform Plan \`${{ github.event.number }}\`
-          
-            <details><summary>Show Plan</summary>
-          
-            \`\`\`\n
-            ${process.env.PLAN}
-            \`\`\`
-          
-            </details>
-          
-            *Pusher: @, Action: \`\`, Working Directory: \`\`, Workflow: \`\`*`;
-          
-            github.rest.issues.createComment({
-              issue_number: ${process.env.PR_NUM},
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output 
-            })
