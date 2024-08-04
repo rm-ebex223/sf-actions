@@ -1,9 +1,4 @@
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - '**.tf'
   pull_request:
     types:
       - closed
@@ -14,7 +9,7 @@ on:
 
 jobs:
   main_push_no_pr:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.event.number == null
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,6 +20,10 @@ jobs:
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
   
+      - name: output pr
+        run: |
+          echo PR #${{ github.event.number }}
+
       - name: Terraform Init
         id: init
         run: terraform init
