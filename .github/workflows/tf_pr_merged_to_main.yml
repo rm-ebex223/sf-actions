@@ -78,7 +78,7 @@ jobs:
             })
 
   tf_push_to_main:
-    if: ${{ github.event_name == 'push' && github.event.pull_request.merged == null }}
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
