@@ -8,7 +8,7 @@ on:
       - '**.tf'
 
 jobs:
-  main_push_no_pr:
+  pr_merged_to_main:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
@@ -19,11 +19,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-  
-      - name: output pr
-        run: |
-          echo PR #${{ github.event.number }}
-          echo PR 
 
       - name: Terraform Init
         id: init
@@ -57,8 +52,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `#### STATUS - *terraform apply*: \`${{ steps.apply.outcome }}\`
-          
+            const output = `####           
             <details><summary>Apply output</summary>
             
             \`\`\`\n
@@ -66,8 +60,9 @@ jobs:
             \`\`\`
               
             </details>
-              
-            *Merged By: @${{ github.actor }}*`;
+            
+            *Status - terraform apply: ${{ steps.apply.outcome }}
+            Merged By: @${{ github.actor }}*`;
               
             github.rest.issues.createComment({
               issue_number: context.issue.number,
