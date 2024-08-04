@@ -1,15 +1,20 @@
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
-      - main
+      - master
     paths:
       - '**.tf'
-
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+    paths:
+      - '**.tf'
+      
 jobs:
   tf_pr_merged_to_main:
-    if: github.event.pull_request.merged == true
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -71,3 +76,40 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+
+  tf_push_to_main:
+    if: ${{ github.event_name == 'push' && github.event.pull_request.merged == null }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+  
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform init
+        id: init
+        run: terraform init
+  
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
+  
+      - name: Terraform validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color -compact-warnings
+        continue-on-error: true
+
+      - name: Check tf plan status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform apply 
+        id: apply
+        run: terraform apply -no-color -auto-approve
