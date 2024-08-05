@@ -45,7 +45,7 @@ jobs:
             const output = `*Status - terraform plan: ${{ steps.plan.outcome }}
             Pushed By: @${{ github.actor }}*
 
-            <details><summary>Show Plan</summary>
+            <details><summary>Plan output</summary>
 
             \`\`\`\n
             ${process.env.PLAN}
