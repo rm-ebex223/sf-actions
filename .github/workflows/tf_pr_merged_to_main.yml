@@ -1,12 +1,12 @@
 on:
   pull_request:
-    branches:
-      - master
     types:
       - closed
+    branches:
+      - main
     paths:
       - '**.tf'
-      
+
 jobs:
   tf_pr_merged_to_main:
     if: github.event.pull_request.merged == true
@@ -47,6 +47,7 @@ jobs:
 
       - name: Add apply output to PR
         uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
         env:
           APPLY: "terraform\n${{ steps.apply.outputs.stdout }}"
         with:
