@@ -7,8 +7,9 @@ on:
       - '**.tf'
 
 jobs:
-  pr_merged:
+  tf_pr_closed_merged:
     # if closed and merged to main, apply TF to main
+    name: Terraform PR closed and merged
     if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
@@ -59,7 +60,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `####*Status - terraform apply: ${{ steps.apply.outcome }}
+          const output = `*Status - terraform apply: ${{ steps.apply.outcome }}
           Merged by: @${{ github.actor }}*
 
           <details><summary>Apply output</summary>
@@ -77,8 +78,9 @@ jobs:
             body: output
           })
 
-  pr_closed:
+  tf_pr_closed_not_merged:
     # if closed and not merged, dump context and do nothing
+    name: Terraform PR closed and not merged
     if: github.event.pull_request.merged == false
     runs-on: ubuntu-latest
     steps:
