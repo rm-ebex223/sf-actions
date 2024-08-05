@@ -1,0 +1,27 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.tf'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**.tf'
+
+jobs:
+  just_testing:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo event ${{ github.event_name }}
+
+      - run: |
+          echo PR# ${{ github.event.number }}
+      
+      - run: |
+          echo is merged ${{ github.event.pull_request.merged }}
+
+      - run: |
+          echo github ref ${{ github.ref }}
