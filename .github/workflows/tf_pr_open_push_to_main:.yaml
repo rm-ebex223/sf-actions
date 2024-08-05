@@ -11,7 +11,7 @@ on:
       - '**.tf'
 
 jobs:
-  tf_pr_merged_to_main:
+  tf_pr_pushed_to_main:
     if: github.event.pull_request.merged != true
     runs-on: ubuntu-latest
     steps:
