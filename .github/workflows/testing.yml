@@ -25,6 +25,13 @@ jobs:
       
       - run: |
           echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
+      
+      - run: |
+          echo github.event.pull_request.merged: ${{ github.event.pull_request.closed_at }}
 
       - run: |
           echo github.ref: ${{ github.ref }}
+
+      - env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
