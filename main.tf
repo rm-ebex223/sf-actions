@@ -45,3 +45,4 @@ resource "snowflake_database" "demo_db_3" {
   name    = "DEMO_DB_3"
   comment = "Database for Snowflake Terraform demo"
 }
+ß
