@@ -24,7 +24,7 @@ jobs:
           TF_WORKSPACE: "prod"
         run: |
           terraform init
-          echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
+#          echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
 
       # - name: Switch workspace
       #   id: workspace
