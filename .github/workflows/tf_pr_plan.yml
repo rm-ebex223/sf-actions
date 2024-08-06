@@ -12,9 +12,8 @@ jobs:
     #if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - env:
-          GITHUB_CONTEXT: ${{ github.event.base.ref }}
-        run: echo "$GITHUB_CONTEXT"
+      - run: |
+          echo github.event.base.ref: ${{ github.event.base.ref }}
       # # dump the GH context for troubleshooting
       # # should probably remove before actually using this
       # - name: Dump Github context
