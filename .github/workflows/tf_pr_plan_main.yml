@@ -6,7 +6,7 @@ on:
       - '**.tf'
 
 jobs:
-  main_tf_pr_open_or_push:
+  tf_pr_main:
     name: main - terraform plan
     runs-on: ubuntu-latest
     steps:        

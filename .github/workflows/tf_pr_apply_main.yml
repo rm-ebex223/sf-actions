@@ -7,16 +7,16 @@ on:
       - '**.tf'
 
 jobs:
-  tf_pr_closed_merged:
+  tf_pr_merged_main:
     # if closed and merged to main, apply TF to main
-    name: Terraform - apply
+    name: main - terraform apply
     if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
     # dump the GH context for troubleshooting
     # should probably remove before actually using this
-    - name: Checkout
-      uses: actions/checkout@v4
+    #- name: Checkout
+    #  uses: actions/checkout@v4
 
     - name: Setup terraform
       uses: hashicorp/setup-terraform@v3
