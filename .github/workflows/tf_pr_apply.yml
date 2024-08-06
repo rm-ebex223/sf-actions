@@ -33,7 +33,7 @@ jobs:
 
     - name: Switch workspace
       id: workspace
-      run: terraform workspace select dev
+      run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
 
     - name: Terraform format
       id: fmt
