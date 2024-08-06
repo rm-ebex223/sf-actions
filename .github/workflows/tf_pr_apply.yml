@@ -15,11 +15,6 @@ jobs:
     steps:
     # dump the GH context for troubleshooting
     # should probably remove before actually using this
-    - name: Dump Github context
-      env:
-        GITHUB_CONTEXT: ${{ toJSON(github) }}
-      run: echo "$GITHUB_CONTEXT"
-    
     - name: Checkout
       uses: actions/checkout@v4
 
