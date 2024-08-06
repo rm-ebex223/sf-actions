@@ -25,8 +25,8 @@ jobs:
 
     - name: Terraform init
       id: init
-      env:
-        TF_WORKSPACE: "prod"
+      # env:
+      #   TF_WORKSPACE: "prod"
       run: |
         terraform init
 
@@ -65,7 +65,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const output = `*Status - terraform plan: \`${{ steps.apply.outcome }}\`
-          Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
+          Environment - N\A
           Pushed by: @${{ github.actor }}*
 
           <details><summary>Apply output</summary>
