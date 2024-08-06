@@ -29,6 +29,10 @@ jobs:
       - name: Terraform init
         id: init
         run: terraform init
+
+      - name: Switch workspace
+        id: workspace
+        run: terraform workspace select prod
   
       - name: Terraform format
         id: fmt
