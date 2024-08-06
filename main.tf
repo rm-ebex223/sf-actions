@@ -10,7 +10,7 @@ terraform {
     organization = "sf-terraform-actions"
 
     workspaces {
-      name = "gh-actions-demo"
+      name = "gh-actions-prod"
     }
   }
 }
