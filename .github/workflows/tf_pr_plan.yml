@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo github.event.base.ref: ${{ github.event.base.ref }}
+          echo github.event.base.ref: ${{ github.ref}}
       # # dump the GH context for troubleshooting
       # # should probably remove before actually using this
       # - name: Dump Github context
