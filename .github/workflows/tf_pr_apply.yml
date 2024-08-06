@@ -60,7 +60,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `*Status - terraform apply: ${{ steps.apply.outcome }}
+          const output = `*Status - terraform apply: \`${{ steps.apply.outcome }}\`
           Merged by: @${{ github.actor }}*
 
           <details><summary>Apply output</summary>
