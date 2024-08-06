@@ -24,11 +24,12 @@ jobs:
           TF_WORKSPACE: "prod"
         run: |
           terraform init
-          echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
 
-      - name: Switch workspace
-        id: workspace
-        run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
+      #     echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
+
+      # - name: Switch workspace
+      #   id: workspace
+      #   run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
   
       - name: Terraform format
         id: fmt
