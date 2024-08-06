@@ -2,195 +2,89 @@ on:
   pull_request:
     branches:
       - main
-      - develop
     paths:
       - '**.tf'
 
 jobs:
   main_tf_pr_open_or_push:
     name: main - terraform plan
-    #if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    steps:
-      - env:
-          GITHUB_CONTEXT: ${{ github.event.base.ref }}
-        run: echo "$GITHUB_CONTEXT"
-      # # dump the GH context for troubleshooting
-      # # should probably remove before actually using this
-      # - name: Dump Github context
-      #   env:
-      #     GITHUB_CONTEXT: ${{ toJSON(github) }}
-      #   run: echo "$GITHUB_CONTEXT"
-        
-      # - name: Checkout
-      #   uses: actions/checkout@v4
+    steps:        
+      - name: Checkout
+        uses: actions/checkout@v4
   
-      # - name: Setup terraform
-      #   uses: hashicorp/setup-terraform@v3
-      #   with:
-      #     cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      # - name: Terraform init
-      #   id: init
-      #   run: terraform init
+      - name: Terraform init
+        id: init
+        run: terraform init
 
-      # - name: Switch workspace
-      #   id: workspace
-      #   run: terraform workspace select prod
+      - name: Switch workspace
+        id: workspace
+        run: terraform workspace select prod
   
-      # - name: Terraform format
-      #   id: fmt
-      #   run: terraform fmt -check
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
   
-      # - name: Terraform validate
-      #   id: validate
-      #   run: terraform validate -no-color
+      - name: Terraform validate
+        id: validate
+        run: terraform validate -no-color
 
-      # - name: Terraform plan
-      #   id: plan
-      #   run: terraform plan -no-color -compact-warnings
-      #   continue-on-error: true
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color -compact-warnings
+        continue-on-error: true
 
-      # - uses: actions/github-script@v7
-      #   if: github.event_name == 'pull_request'
-      #   env:
-      #     PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     script: |     
-      #       // 1. Retrieve existing bot comments for the PR
-      #         const { data: comments } = await github.rest.issues.listComments({
-      #           owner: context.repo.owner,
-      #           repo: context.repo.repo,
-      #           issue_number: context.issue.number,
-      #         })
-      #         const botComment = comments.find(comment => {
-      #           return comment.user.type === 'Bot' && comment.body.includes(' terraform plan: ')
-      #         })
+      - uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |     
+            // 1. Retrieve existing bot comments for the PR
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              })
+              const botComment = comments.find(comment => {
+                return comment.user.type === 'Bot' && comment.body.includes(' terraform plan: ')
+              })
 
-      #         // 2. Prepare format of the comment
-      #         const output = `*Status - terraform plan: \`${{ steps.plan.outcome }}\`
-      #         Pushed by: @${{ github.actor }}*
+              // 2. Prepare format of the comment
+              const output = `*Status - terraform plan: \`${{ steps.plan.outcome }}\`
+              Pushed by: @${{ github.actor }}*
               
-      #         <details><summary>Show Plan</summary>
+              <details><summary>Show Plan</summary>
 
-      #         \`\`\`\n
-      #         ${process.env.PLAN}
-      #         \`\`\`
+              \`\`\`\n
+              ${process.env.PLAN}
+              \`\`\`
 
-      #         </details>`;
+              </details>`;
 
-      #         // 3. If we have a comment, update it, otherwise create a new one
-      #         if (botComment) {
-      #           github.rest.issues.updateComment({
-      #             owner: context.repo.owner,
-      #             repo: context.repo.repo,
-      #             comment_id: botComment.id,
-      #             body: output
-      #           })
-      #         } else {
-      #           github.rest.issues.createComment({
-      #             issue_number: context.issue.number,
-      #             owner: context.repo.owner,
-      #             repo: context.repo.repo,
-      #             body: output
-      #           })
-      #         }
+              // 3. If we have a comment, update it, otherwise create a new one
+              if (botComment) {
+                github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: output
+                })
+              } else {
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: output
+                })
+              }
 
-      # - name: Check tf plan status
-      #   if: steps.plan.outcome == 'failure'
-      #   run: exit 1
-
-  # develop_tf_pr_open_or_push:
-  #   name: develop - terraform plan
-  #   if: github.ref == 'refs/heads/develop'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - env:
-  #         GITHUB_CONTEXT: ${{ github.event.base.ref }}
-  #       run: echo "$GITHUB_CONTEXT"
-      # # dump the GH context for troubleshooting
-      # # should probably remove before actually using this
-      # - name: Dump Github context
-      #   env:
-      #     GITHUB_CONTEXT: ${{ toJSON(github) }}
-      #   run: echo "$GITHUB_CONTEXT"
-        
-      # - name: Checkout
-      #   uses: actions/checkout@v4
-  
-      # - name: Setup terraform
-      #   uses: hashicorp/setup-terraform@v3
-      #   with:
-      #     cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
-      # - name: Terraform init
-      #   id: init
-      #   run: terraform init
-
-      # - name: Switch workspace
-      #   id: workspace
-      #   run: terraform workspace select prod
-  
-      # - name: Terraform format
-      #   id: fmt
-      #   run: terraform fmt -check
-  
-      # - name: Terraform validate
-      #   id: validate
-      #   run: terraform validate -no-color
-
-      # - name: Terraform plan
-      #   id: plan
-      #   run: terraform plan -no-color -compact-warnings
-      #   continue-on-error: true
-
-      # - uses: actions/github-script@v7
-      #   if: github.event_name == 'pull_request'
-      #   env:
-      #     PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     script: |     
-      #       // 1. Retrieve existing bot comments for the PR
-      #         const { data: comments } = await github.rest.issues.listComments({
-      #           owner: context.repo.owner,
-      #           repo: context.repo.repo,
-      #           issue_number: context.issue.number,
-      #         })
-      #         const botComment = comments.find(comment => {
-      #           return comment.user.type === 'Bot' && comment.body.includes(' terraform plan: ')
-      #         })
-
-      #         // 2. Prepare format of the comment
-      #         const output = `*Status - terraform plan: \`${{ steps.plan.outcome }}\`
-      #         Pushed by: @${{ github.actor }}*
-              
-      #         <details><summary>Show Plan</summary>
-
-      #         \`\`\`\n
-      #         ${process.env.PLAN}
-      #         \`\`\`
-
-      #         </details>`;
-
-      #         // 3. If we have a comment, update it, otherwise create a new one
-      #         if (botComment) {
-      #           github.rest.issues.updateComment({
-      #             owner: context.repo.owner,
-      #             repo: context.repo.repo,
-      #             comment_id: botComment.id,
-      #             body: output
-      #           })
-      #         } else {
-      #           github.rest.issues.createComment({
-      #             issue_number: context.issue.number,
-      #             owner: context.repo.owner,
-      #             repo: context.repo.repo,
-      #             body: output
-      #           })
-      #         }
-
-      # - name: Check tf plan status
-      #   if: steps.plan.outcome == 'failure'
-      #   run: exit 1
+      - name: Check tf plan status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
