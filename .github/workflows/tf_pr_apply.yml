@@ -31,6 +31,8 @@ jobs:
     - name: Terraform init
       id: init
       run: terraform init
+      env:
+        TF_WORKSPACE: "dev"
 
     - name: Switch workspace
       id: workspace
