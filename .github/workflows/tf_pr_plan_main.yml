@@ -20,15 +20,16 @@ jobs:
 
       - name: Terraform init
         id: init
-        env:
-          TF_WORKSPACE: "prod"
+        # env:
+        #   TF_WORKSPACE: "prod"
         run: |
           terraform init
-          echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
 
-      - name: Switch workspace
-        id: workspace
-        run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
+      #     echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
+
+      # - name: Switch workspace
+      #   id: workspace
+      #   run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
   
       - name: Terraform format
         id: fmt
@@ -62,7 +63,7 @@ jobs:
 
               // 2. Prepare format of the comment
               const output = `*Status - terraform plan: \`${{ steps.plan.outcome }}\`
-              Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
+              Environment - N\A
               Pushed by: @${{ github.actor }}*
               
               <details><summary>Show Plan</summary>
