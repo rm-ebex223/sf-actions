@@ -26,7 +26,7 @@ jobs:
     - name: Terraform init
       id: init
       env:
-        TF_WORKSPACE: "dev"
+        TF_WORKSPACE: "prod"
       run: |
         terraform init
         echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
