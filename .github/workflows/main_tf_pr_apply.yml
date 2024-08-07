@@ -10,6 +10,7 @@ jobs:
   tf_pr_merged_main:
     # if closed and merged to main, apply TF to main
     name: main - terraform apply
+    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:        
     - name: Checkout
@@ -50,7 +51,6 @@ jobs:
       run: exit 1
     
     - name: Terraform apply 
-      if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
       id: apply
       run: terraform apply -no-color -auto-approve
     # add the TF apply output to the closed PR for auditing
