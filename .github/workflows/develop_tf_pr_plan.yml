@@ -13,13 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add some context
-        env: 
+        env:
           BASE_REF: ${{ github.base_ref }}
           IS_MERGED: ${{ github.event.pull_request.merged }}
           GH_ACTION: ${{ github.event.action }}
+          GH_EVENT: ${{ github.event_name }}
         run: |
           echo github.base_ref: "$BASE_REF"
           echo github.event.pull_request.merged: "$IS_MERGED"
+          echo github.event_name: "GH_EVENT"
           echo github.event.action: "$GH_ACTION"
 
       - name: Checkout
