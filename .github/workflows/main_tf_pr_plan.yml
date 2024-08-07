@@ -12,19 +12,29 @@ jobs:
     steps:        
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Dump matrix context
         env:
           BASE_REF: ${{ github.base_ref }}
-        run: echo "$BASE_REF"
-      - name: Dump matrix context
-        env:
           IS_MERGED: ${{ github.event.pull_request.merged }}
-        run: echo "$IS_MERGED"
-      - name: Dump matrix context
-        env:
           GH_ACTION: ${{ github.event.action }}
-        run: echo "$GH_ACTION"
+        run: |
+          echo "$BASE_REF"
+          echo "$IS_MERGED"
+          echo "$GH_ACTION"
+      
+      # - name: Dump matrix context
+      #   env:
+      #     BASE_REF: ${{ github.base_ref }}
+      #   run: echo "$BASE_REF"
+      # - name: Dump matrix context
+      #   env:
+      #     IS_MERGED: ${{ github.event.pull_request.merged }}
+      #   run: echo "$IS_MERGED"
+      # - name: Dump matrix context
+      #   env:
+      #     GH_ACTION: ${{ github.event.action }}
+      #   run: echo "$GH_ACTION"
   
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v3
