@@ -12,11 +12,9 @@ jobs:
     name: main - terraform apply
     if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    steps:
-    # dump the GH context for troubleshooting
-    # should probably remove before actually using this
-    #- name: Checkout
-    #  uses: actions/checkout@v4
+    steps:        
+    - name: Checkout
+      uses: actions/checkout@v4
 
     - name: Setup terraform
       uses: hashicorp/setup-terraform@v3
