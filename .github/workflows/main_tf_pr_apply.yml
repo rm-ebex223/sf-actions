@@ -15,21 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:        
       - name: Add some context
-        env:
-          BASE_REF: ${{ github.base_ref }}
-          IS_MERGED: ${{ github.event.pull_request.merged }}
-          GH_ACTION: ${{ github.event.action }}
         run: |
-          echo github.base_ref: "$BASE_REF"
-          echo github.event.pull_request.merged: "$IS_MERGED"
-          echo github.event.action: "$GH_ACTION" 
+          echo github.base_ref: ${{ github.base_ref }}
+          echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
+          echo github.event_name: ${{ github.event.action }}
+          echo github.event.action: ${{ github.event_name }}
 
       - name: add closure message
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `PR closed without merging to main`; 
+            const output = `PR closed without merging to \`main\``; 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -42,22 +39,16 @@ jobs:
     if: ${{ github.base_ref == 'main' && github.event.pull_request.merged == true }}
     name: main - closed with merge
     runs-on: ubuntu-latest
-    steps:        
+    steps:
+      - name: Add some context
+        run: |
+          echo github.base_ref: ${{ github.base_ref }}
+          echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
+          echo github.event_name: ${{ github.event.action }}
+          echo github.event.action: ${{ github.event_name }}
+
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Dump matrix context
-        env:
-          BASE_REF: ${{ github.base_ref }}
-        run: echo "$BASE_REF"
-      - name: Dump matrix context
-        env:
-          IS_MERGED: ${{ github.event.pull_request.merged}}
-        run: echo "$IS_MERGED"
-      - name: Dump matrix context
-        env:
-          GH_ACTION: ${{ github.event.action }}
-        run: echo "$GH_ACTION"
 
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v3
@@ -94,27 +85,37 @@ jobs:
         run: exit 1
     
       - name: Terraform apply 
-        if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
         id: apply
         run: terraform apply -no-color -auto-approve
+        
       # add the TF apply output to the closed PR for auditing
-      - name: Add apply output to PR
+      - name: Add plan and apply outputs to PR
         uses: actions/github-script@v7
         env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
           APPLY: "terraform\n${{ steps.apply.outputs.stdout }}"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `*Status - terraform apply: \`${{ steps.apply.outcome }}\`
-            Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
-            Pushed by: @${{ github.actor }}*
+            const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
+            Last action - \`${{ github.event.action }}\`
+            Status - terraform plan: \`${{ steps.plan.outcome }}\`
+            Status - terraform apply: \`${{ steps.apply.outcome }}\`*
+
+            <details><summary>Plan output</summary>
+
+            \`\`\`
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
 
             <details><summary>Apply output</summary>
-          
-            \`\`\`\n
+
+            \`\`\`
             ${process.env.APPLY}
             \`\`\`
-             
+
             </details>`;
             
             github.rest.issues.createComment({

@@ -7,30 +7,119 @@ on:
       - '**.tf'
 
 jobs:
-  dump_contexts_to_log:
+  tf_pr_not_merged_develop:
+    # if closed and merged to develop, apply TF to develop
+    if: ${{ github.base_ref == 'develop' && github.event.pull_request.merged == false }}
+    name: develop - closed without merge
+    runs-on: ubuntu-latest
+    steps:        
+      - name: Add some context
+        run: |
+          echo github.base_ref: ${{ github.base_ref }}
+          echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
+          echo github.event_name: ${{ github.event.action }}
+          echo github.event.action: ${{ github.event_name }}
+
+      - name: add closure message
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `PR closed without merging to \`develop\``; 
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+  tf_pr_merged_develop:
+    # if closed and merged to develop, apply TF to develop
+    if: ${{ github.base_ref == 'develop' && github.event.pull_request.merged == true }}
+    name: develop - closed with merge
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
+      - name: Add some context
+        run: |
+          echo github.base_ref: ${{ github.base_ref }}
+          echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
+          echo github.event_name: ${{ github.event.action }}
+          echo github.event.action: ${{ github.event_name }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform init
+        id: init
         env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Dump job context
+          TF_WORKSPACE: "gh-actions-qa"
+        run: |
+          terraform init
+          echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
+
+          - name: Switch workspace
+          id: workspace
+          run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
+  
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate -no-color
+    
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color -compact-warnings
+        continue-on-error: true
+    
+      - name: Check tf plan status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+    
+      - name: Terraform apply 
+        id: apply
+        run: terraform apply -no-color -auto-approve
+
+      # add the TF apply output to the closed PR for auditing
+      - name: Add plan and apply outputs to PR
+        uses: actions/github-script@v7
         env:
-          JOB_CONTEXT: ${{ toJson(job) }}
-        run: echo "$JOB_CONTEXT"
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJson(steps) }}
-        run: echo "$STEPS_CONTEXT"
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo "$RUNNER_CONTEXT"
-      - name: Dump strategy context
-        env:
-          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-        run: echo "$STRATEGY_CONTEXT"
-      - name: Dump matrix context
-        env:
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        run: echo "$MATRIX_CONTEXT"
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+          APPLY: "terraform\n${{ steps.apply.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
+            Last action - \`${{ github.event.action }}\`
+            Status - terraform plan: \`${{ steps.plan.outcome }}\`
+            Status - terraform apply: \`${{ steps.apply.outcome }}\`*
+
+            <details><summary>Plan output</summary>
+
+            \`\`\`
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            <details><summary>Apply output</summary>
+
+            \`\`\`
+            ${process.env.APPLY}
+            \`\`\`
+
+            </details>`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
