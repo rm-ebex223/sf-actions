@@ -19,9 +19,9 @@ jobs:
           IS_MERGED: ${{ github.event.pull_request.merged }}
           GH_ACTION: ${{ github.event.action }}
         run: |
-          echo "$BASE_REF"
-          echo "$IS_MERGED"
-          echo "$GH_ACTION"
+          echo github.base_ref: "$BASE_REF"
+          echo github.event.pull_request.merged: "$IS_MERGED"
+          echo github.event.action: "$GH_ACTION"
       
       # - name: Dump matrix context
       #   env:
