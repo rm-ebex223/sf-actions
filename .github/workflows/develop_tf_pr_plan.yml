@@ -119,3 +119,6 @@ jobs:
               })
             }
     
+      - name: Error if plan or apply failure
+        if: ${{ steps.plan.outcome == 'failure' || steps.apply.outcome == 'failure' }}
+        run: exit 1
