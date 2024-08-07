@@ -9,7 +9,7 @@ jobs:
   tf_pr_merged_main:
     # if closed and merged to main, apply TF to main
     name: main - terraform apply
-    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
+#    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:        
     - name: Checkout
