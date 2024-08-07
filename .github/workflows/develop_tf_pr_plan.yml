@@ -21,7 +21,7 @@ jobs:
         run: |
           echo github.base_ref: "$BASE_REF"
           echo github.event.pull_request.merged: "$IS_MERGED"
-          echo github.event_name: "GH_EVENT"
+          echo github.event_name: "$GH_EVENT"
           echo github.event.action: "$GH_ACTION"
 
       - name: Checkout
