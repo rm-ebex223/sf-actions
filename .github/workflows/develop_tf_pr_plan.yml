@@ -13,16 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add some context
-        env:
-          BASE_REF: ${{ github.base_ref }}
-          IS_MERGED: ${{ github.event.pull_request.merged }}
-          GH_ACTION: ${{ github.event.action }}
-          GH_EVENT: ${{ github.event_name }}
+        # env:
+        #   BASE_REF: ${{ github.base_ref }}
+        #   IS_MERGED: ${{ github.event.pull_request.merged }}
+        #   GH_ACTION: ${{ github.event.action }}
+        #   GH_EVENT: ${{ github.event_name }}
         run: |
-          echo github.base_ref: "$BASE_REF"
-          echo github.event.pull_request.merged: "$IS_MERGED"
-          echo github.event_name: "$GH_EVENT"
-          echo github.event.action: "$GH_ACTION"
+          echo github.base_ref: ${{ github.base_ref }}
+          echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
+          echo github.event_name: ${{ github.event.action }}
+          echo github.event.action: ${{ github.event_name }}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -83,7 +83,8 @@ jobs:
 
             // 2. Prepare format of the comment
             const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
-            Pushed by: @${{ github.actor }}*
+            Last event - \`${{ github.event_name }}\`
+            Updated by - @${{ github.actor }}*
             
             *Status - terraform plan: \`${{ steps.plan.outcome }}\`*
             <details><summary>Plan output</summary>
