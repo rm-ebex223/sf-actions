@@ -57,7 +57,7 @@ jobs:
         run: terraform plan -no-color -compact-warnings
 
       - name: Terraform apply 
-        if: github.base_ref == 'develop'
+        if: github.base_ref == 'develop' && github.event.action != 'reopened'
         id: apply
         run: terraform apply -no-color -auto-approve
         
