@@ -19,8 +19,12 @@ jobs:
         run: echo "$BASE_REF"
       - name: Dump matrix context
         env:
-          IS_MERGED: ${{ github.event.pull_request.merged == true }}
+          IS_MERGED: ${{ github.event.pull_request.merged }}
         run: echo "$IS_MERGED"
+      - name: Dump matrix context
+        env:
+          GH_ACTION: ${{ github.event.action }}
+        run: echo "$GH_ACTION"
   
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v3

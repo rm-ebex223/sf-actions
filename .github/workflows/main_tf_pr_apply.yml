@@ -7,21 +7,59 @@ on:
       - '**.tf'
 
 jobs:
-  tf_pr_merged_main:
+  tf_pr_not_merged_main:
     # if closed and merged to main, apply TF to main
-    name: main - terraform apply
+    if: ${{ github.base_ref == 'main' && github.event.pull_request.merged == false }}
+    name: main - closed without merge
     runs-on: ubuntu-latest
     steps:        
-    - name: Checkout
-      uses: actions/checkout@v4
     - name: Dump matrix context
       env:
         BASE_REF: ${{ github.base_ref }}
       run: echo "$BASE_REF"
     - name: Dump matrix context
       env:
-        IS_MERGED: ${{ github.event.pull_request.merged == true }}
+        IS_MERGED: ${{ github.event.pull_request.merged }}
       run: echo "$IS_MERGED"
+    - name: Dump matrix context
+      env:
+         GH_ACTION: ${{ github.event.action }}
+      run: echo "$GH_ACTION"
+
+    - name: add closure message
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `PR closed without merging to main`; 
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+
+  tf_pr_merged_main:
+    # if closed and merged to main, apply TF to main
+    if: ${{ github.base_ref == 'main' && github.event.pull_request.merged == true }}
+    name: main - closed with merge
+    runs-on: ubuntu-latest
+    steps:        
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Dump matrix context
+      env:
+        BASE_REF: ${{ github.base_ref }}
+      run: echo "$BASE_REF"
+    - name: Dump matrix context
+      env:
+        IS_MERGED: ${{ github.event.pull_request.merged}}
+      run: echo "$IS_MERGED"
+    - name: Dump matrix context
+      env:
+        GH_ACTION: ${{ github.event.action }}
+      run: echo "$GH_ACTION"
 
     - name: Setup terraform
       uses: hashicorp/setup-terraform@v3
