@@ -1,5 +1,7 @@
 on:
   pull_request:
+    types: 
+      [ opened,reopened,synchronize ]
     branches:
       - main
     paths:
@@ -9,32 +11,19 @@ jobs:
   tf_pr_main:
     name: main - terraform plan
     runs-on: ubuntu-latest
-    steps:        
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Dump matrix context
+    steps:
+      - name: Add some context
         env:
           BASE_REF: ${{ github.base_ref }}
           IS_MERGED: ${{ github.event.pull_request.merged }}
           GH_ACTION: ${{ github.event.action }}
         run: |
-          echo "$BASE_REF"
-          echo "$IS_MERGED"
-          echo "$GH_ACTION"
-      
-      # - name: Dump matrix context
-      #   env:
-      #     BASE_REF: ${{ github.base_ref }}
-      #   run: echo "$BASE_REF"
-      # - name: Dump matrix context
-      #   env:
-      #     IS_MERGED: ${{ github.event.pull_request.merged }}
-      #   run: echo "$IS_MERGED"
-      # - name: Dump matrix context
-      #   env:
-      #     GH_ACTION: ${{ github.event.action }}
-      #   run: echo "$GH_ACTION"
+          echo github.base_ref: "$BASE_REF"
+          echo github.event.pull_request.merged: "$IS_MERGED"
+          echo github.event.action: "$GH_ACTION"
+
+      - name: Checkout
+        uses: actions/checkout@v4
   
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v3
@@ -53,7 +42,7 @@ jobs:
         id: workspace
         run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
   
-      - name: Terraform format
+      - name: Terraform format check
         id: fmt
         run: terraform fmt -check
   
@@ -66,7 +55,8 @@ jobs:
         run: terraform plan -no-color -compact-warnings
         continue-on-error: true
 
-      - uses: actions/github-script@v7
+      - name: Add plan output to PR
+        uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
