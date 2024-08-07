@@ -14,26 +14,26 @@ jobs:
     steps:
       - name: Add some context
         env:
-          TF_WORKSPACE: "gh-actions-dev"
+          ACTIVE_WORKSPACE: "gh-actions-dev"
         run: |
           echo github.base_ref: ${{ github.base_ref }}
           echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
           echo github.event_name: ${{ github.event.action }}
           echo github.event.action: ${{ github.event_name }}
-          echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
+          echo "ACTIVE_WORKSPACE=${ACTIVE_WORKSPACE}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v4
   
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v3
-        env:
-          TF_WORKSPACE: "gh-actions-dev"
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform init
         id: init
+        env:
+          TF_WORKSPACE: ${{ env.ACTIVE_WORKSPACE }}
         run: |
           terraform init -no-color
         continue-on-error: true
