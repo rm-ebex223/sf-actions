@@ -35,7 +35,7 @@ resource "snowflake_database" "demo_db" {
 #   comment = "Database for Snowflake Terraform demo"
 # }
 
-resource "snowflake_database" "demo_db_3" {
-  name    = "DB_DB"
-  comment = "Database for Snowflake Terraform demo"
-}
+# resource "snowflake_database" "demo_db_3" {
+#   name    = "MORE_DEMO_DB"
+#   comment = "Database for Snowflake Terraform demo"
+# }
