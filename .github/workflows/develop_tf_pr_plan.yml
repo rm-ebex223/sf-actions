@@ -83,9 +83,9 @@ jobs:
 
             // 2. Prepare format of the comment
             const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
-            Pushed by: @${{ github.actor }}*
+            Pushed by: @${{ github.actor }}*\n\n
             
-            *Status - terraform plan: \`${{ steps.plan.outcome }}\`*\n
+            *Status - terraform plan: \`${{ steps.plan.outcome }}\`*
 
             <details><summary>Plan output</summary>
 
@@ -99,7 +99,7 @@ jobs:
 
             <details><summary>Apply output</summary>
 
-            \`\`\`\n
+            \`\`\`
             ${process.env.APPLY}
             \`\`\`
 
