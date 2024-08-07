@@ -10,7 +10,6 @@ jobs:
   tf_pr_merged_main:
     # if closed and merged to main, apply TF to main
     name: main - terraform apply
-    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:        
     - name: Checkout
@@ -24,14 +23,14 @@ jobs:
     - name: Terraform init
       id: init
       env:
-        ACTIVE_WORKSPACE: "prod"
+        TF_WORKSPACE: "gh-actions-prod"
       run: |
         terraform init
-        echo "ACTIVE_WORKSPACE=gh-actions-${ACTIVE_WORKSPACE}" >> $GITHUB_ENV
+        echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
 
     - name: Switch workspace
       id: workspace
-      run: terraform workspace select gh-actions-${{ env.ACTIVE_WORKSPACE }}
+      run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
 
     - name: Terraform format
       id: fmt
@@ -51,6 +50,7 @@ jobs:
       run: exit 1
     
     - name: Terraform apply 
+      if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
       id: apply
       run: terraform apply -no-color -auto-approve
     # add the TF apply output to the closed PR for auditing
