@@ -85,12 +85,11 @@ jobs:
             const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
             Pushed by: @${{ github.actor }}*
             
-
-            *Status - terraform plan: \`${{ steps.plan.outcome }}\`*
+            *Status - terraform plan: \`${{ steps.plan.outcome }}\`*\n
 
             <details><summary>Plan output</summary>
 
-            \`\`\`\n
+            \`\`\`
             ${process.env.PLAN}
             \`\`\`
 
