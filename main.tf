@@ -6,11 +6,12 @@ terraform {
     }
   }
 
-  backend "remote" {
+  cloud {
     organization = "sf-terraform-actions"
 
     workspaces {
-      prefix = "gh-actions-"
+      project = "sf-tf-actions"
+      tags    = ["main"]
     }
   }
 }
@@ -18,16 +19,16 @@ terraform {
 provider "snowflake" {
 }
 
-# resource "snowflake_database" "demo_db" {
-#   name    = "DB_DB"
-#   comment = "Database for Snowflake Terraform demo"
-# }
+resource "snowflake_database" "demo_db" {
+  name    = "DB_DB"
+  comment = "Database for Snowflake Terraform demo"
+}
 
-# resource "snowflake_schema" "demo_schema" {
-#   database = snowflake_database.demo_db.name
-#   name     = "DEMO_SCHEMA"
-#   comment  = "Schema for Snowflake Terraform demo"
-# }
+resource "snowflake_schema" "demo_schema" {
+  database = snowflake_database.demo_db.name
+  name     = "DEMO_SCHEMA"
+  comment  = "Schema for Snowflake Terraform demo"
+}
 
 # resource "snowflake_database" "demo_db_2" {
 #   name    = "ANOTHER_DEMO_DB"
