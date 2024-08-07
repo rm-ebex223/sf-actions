@@ -59,7 +59,7 @@ jobs:
         id: apply
         run: terraform apply -no-color -auto-approve
         
-      - name: Add plan output to PR
+      - name: Add apply and plan outputs to PR
         uses: actions/github-script@v7
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
@@ -83,6 +83,7 @@ jobs:
             const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
             Pushed by: @${{ github.actor }}*
             
+
             *Status - terraform plan: \`${{ steps.plan.outcome }}\`*
 
             <details><summary>Plan output</summary>
