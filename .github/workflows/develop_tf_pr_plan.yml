@@ -83,25 +83,20 @@ jobs:
 
             // 2. Prepare format of the comment
             const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
-            Last action  - \`${{ github.event.action }}\`
+            Last action - \`${{ github.event.action }}\`
             Triggered by - @${{ github.actor }}*
-            
-            *Status - terraform plan: \`${{ steps.plan.outcome }}\`*
-            <details><summary>Plan output</summary>
+            Status - terraform plan: \`${{ steps.plan.outcome }}\
+            *Status - terraform apply: \`${{ steps.apply.outcome }}\`*
 
+            <details><summary>Plan output</summary>
             \`\`\`
             ${process.env.PLAN}
             \`\`\`
-
             </details>
-            
-            *Status - terraform apply: \`${{ steps.apply.outcome }}\`*
             <details><summary>Apply output</summary>
-
             \`\`\`
             ${process.env.APPLY}
             \`\`\`
-
             </details>`;
 
             // 3. If we have a comment, update it, otherwise create a new one
