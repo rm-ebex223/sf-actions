@@ -1,5 +1,7 @@
 on:
   pull_request:
+    types: 
+      [ opened,reopened,synchronize ]
     branches:
       - develop
     paths:
@@ -19,3 +21,88 @@ jobs:
           echo github.base_ref: "$BASE_REF"
           echo github.event.pull_request.merged: "$IS_MERGED"
           echo github.event.action: "$GH_ACTION"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+  
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform init
+        id: init
+        env:
+          TF_WORKSPACE: "gh-actions-dev"
+        run: |
+          terraform init
+          echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
+
+      - name: Switch workspace
+        id: workspace
+        run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
+  
+      - name: Terraform format check
+        id: fmt
+        run: terraform fmt -check
+  
+      - name: Terraform validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color -compact-warnings
+        continue-on-error: true
+
+      - name: Add plan output to PR
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |     
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes(' terraform plan: ')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `*Status - terraform plan: \`${{ steps.plan.outcome }}\`
+            Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
+            Pushed by: @${{ github.actor }}*
+              
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
+    
+      - name: Check tf plan status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
