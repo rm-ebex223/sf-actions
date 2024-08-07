@@ -145,6 +145,7 @@ jobs:
                 body: output
               })
             }
+
       - name: Write failures to PR
         if: ${{ steps.init.outcome == 'failure' || steps.workspace.outcome == 'failure' || steps.fmt.outcome == 'failure' || steps.validate.outcome == 'failure' || steps.plan.outcome == 'failure' }}
         run: exit 1
@@ -154,7 +155,61 @@ jobs:
         id: apply
         run: terraform apply -no-color -auto-approve
         continue-on-error: true
-        
+
+      - name: Write failures to PR
+        if: ${{ steps.apply.outcome == 'failure' }}
+        uses: actions/github-script@v7
+        env:
+          APPLY: "terraform\n${{ steps.apply.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |     
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && 
+              comment.body.includes(' terraform plan: ') && 
+              comment.body.includes('Environment - \`gh-actions-dev\`')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
+            Last action - \`${{ github.event.action }}\`
+            Status - terraform apply: \`${{ steps.apply.outcome }}\`*
+
+            <details><summary>Apply output</summary>
+
+            \`\`\`
+            ${process.env.APPLY}
+            \`\`\`
+
+            </details>`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
+
+      - name: Write failures to PR
+        if: ${{ steps.apply.outcome == 'failure' }}
+        run: exit 1
+
       # - name: Add plan and apply outputs to PR
       #   uses: actions/github-script@v7
       #   env:
