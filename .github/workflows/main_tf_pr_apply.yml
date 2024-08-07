@@ -10,13 +10,10 @@ jobs:
   tf_pr_merged_main:
     # if closed and merged to main, apply TF to main
     name: main - terraform apply
-    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    steps:
-    # dump the GH context for troubleshooting
-    # should probably remove before actually using this
-    #- name: Checkout
-    #  uses: actions/checkout@v4
+    steps:        
+    - name: Checkout
+      uses: actions/checkout@v4
 
     - name: Setup terraform
       uses: hashicorp/setup-terraform@v3
@@ -53,6 +50,7 @@ jobs:
       run: exit 1
     
     - name: Terraform apply 
+      if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
       id: apply
       run: terraform apply -no-color -auto-approve
     # add the TF apply output to the closed PR for auditing
@@ -63,7 +61,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `*Status - terraform plan: \`${{ steps.apply.outcome }}\`
+          const output = `*Status - terraform apply: \`${{ steps.apply.outcome }}\`
           Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
           Pushed by: @${{ github.actor }}*
 
