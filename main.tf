@@ -11,7 +11,7 @@ terraform {
 
     workspaces {
       project = "sf-tf-actions"
-      tags = ["main"]
+      tags    = ["main"]
     }
   }
 }
@@ -24,11 +24,11 @@ resource "snowflake_database" "demo_db" {
   comment = "Database for Snowflake Terraform demo"
 }
 
-# resource "snowflake_schema" "demo_schema" {
-#   database = snowflake_database.demo_db.name
-#   name     = "DEMO_SCHEMA"
-#   comment  = "Schema for Snowflake Terraform demo"
-# }
+resource "snowflake_schema" "demo_schema" {
+  database = snowflake_database.demo_db.name
+  name     = "DEMO_SCHEMA"
+  comment  = "Schema for Snowflake Terraform demo"
+}
 
 # resource "snowflake_database" "demo_db_2" {
 #   name    = "ANOTHER_DEMO_DB"
