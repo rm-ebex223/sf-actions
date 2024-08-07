@@ -6,11 +6,12 @@ terraform {
     }
   }
 
-  backend "remote" {
+  cloud {
     organization = "sf-terraform-actions"
 
     workspaces {
-      prefix = "gh-actions-"
+      project = "sf-tf-actions"
+      tags = ["main"]
     }
   }
 }
