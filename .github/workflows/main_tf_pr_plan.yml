@@ -12,6 +12,10 @@ jobs:
     steps:        
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Dump matrix context
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: echo "$BASE_REF"
   
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v3

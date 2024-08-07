@@ -33,3 +33,7 @@ jobs:
         env:
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         run: echo "$MATRIX_CONTEXT"
+      - name: Dump matrix context
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: echo "$BASE_REF"
