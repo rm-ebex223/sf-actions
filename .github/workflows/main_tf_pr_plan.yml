@@ -13,16 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add some context
-        env:
-          BASE_REF: ${{ github.base_ref }}
-          IS_MERGED: ${{ github.event.pull_request.merged }}
-          GH_ACTION: ${{ github.event.action }}
-          GH_EVENT: ${{ github.event_name }}
         run: |
-          echo github.base_ref: "$BASE_REF"
-          echo github.event.pull_request.merged: "$IS_MERGED"
-          echo github.event_name: "$GH_EVENT"
-          echo github.event.action: "$GH_ACTION"
+          echo github.base_ref: ${{ github.base_ref }}
+          echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
+          echo github.event_name: ${{ github.event.action }}
+          echo github.event.action: ${{ github.event_name }}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,17 +67,19 @@ jobs:
               issue_number: context.issue.number,
             })
             const botComment = comments.find(comment => {
-              return comment.user.type === 'Bot' && comment.body.includes(' terraform plan: ')
+              return comment.user.type === 'Bot' && 
+              comment.body.includes(' terraform plan: ') && 
+              comment.body.includes('Environment - \`gh-actions-dev\`')
             })
 
             // 2. Prepare format of the comment
-            const output = `*Status - terraform plan: \`${{ steps.plan.outcome }}\`
-            Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
-            Pushed by: @${{ github.actor }}*
+            const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
+            Last action - \`${{ github.event.action }}\`
+            Status - terraform plan: \`${{ steps.plan.outcome }}\`*
               
             <details><summary>Show Plan</summary>
 
-            \`\`\`\n
+            \`\`\`
             ${process.env.PLAN}
             \`\`\`
 
