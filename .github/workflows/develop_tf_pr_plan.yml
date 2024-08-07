@@ -33,7 +33,7 @@ jobs:
       - name: Terraform init
         id: init
         run: |
-          terraform init --no-color
+          terraform init -no-color
         continue-on-error: true
 
       - name: Switch workspace
