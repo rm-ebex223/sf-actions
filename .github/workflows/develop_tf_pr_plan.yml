@@ -118,5 +118,5 @@ jobs:
             }
     
       - name: Check tf plan status
-        if: ${{ steps.plan.outcome == 'failure' || steps.apply.out == 'failure' }}
+        if: ${{ steps.plan.outcome == 'failure' || steps.apply.outcome == 'failure' }}
         run: exit 1
