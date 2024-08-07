@@ -35,23 +35,19 @@ jobs:
         env:
           TF_WORKSPACE: ${{ env.ACTIVE_WORKSPACE }}
         run: |
-          terraform init -no-color
-        continue-on-error: true
+          terraform init
 
       - name: Switch workspace
         id: workspace
         run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
-        continue-on-error: true
   
       - name: Terraform format check
         id: fmt
         run: terraform fmt -check
-        continue-on-error: true
   
       - name: Terraform validate
         id: validate
-        run: terraform validate -no-color
-        continue-on-error: true
+        run: terraform validate
 
       - name: Terraform plan
         id: plan
