@@ -83,8 +83,8 @@ jobs:
 
             // 2. Prepare format of the comment
             const output = `*Environment - \`${{ env.ACTIVE_WORKSPACE }}\`
-            Last action - \`${{ github.event.action }}\`
-            Updated by - @${{ github.actor }}*
+            Last action  - \`${{ github.event.action }}\`
+            Triggered by - @${{ github.actor }}*
             
             *Status - terraform plan: \`${{ steps.plan.outcome }}\`*
             <details><summary>Plan output</summary>
