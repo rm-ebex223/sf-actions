@@ -13,11 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add some context
+        env:
+          ACTIVE_WORKSPACE: "gh-actions-prod"
         run: |
           echo github.base_ref: ${{ github.base_ref }}
           echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
           echo github.event_name: ${{ github.event.action }}
           echo github.event.action: ${{ github.event_name }}
+          echo "ACTIVE_WORKSPACE=${ACTIVE_WORKSPACE}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,10 +33,9 @@ jobs:
       - name: Terraform init
         id: init
         env:
-          TF_WORKSPACE: "gh-actions-prod"
+          TF_WORKSPACE: ${{ env.ACTIVE_WORKSPACE }}
         run: |
           terraform init
-          echo "ACTIVE_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
 
       - name: Switch workspace
         id: workspace
@@ -69,7 +71,7 @@ jobs:
             const botComment = comments.find(comment => {
               return comment.user.type === 'Bot' && 
               comment.body.includes(' terraform plan: ') && 
-              comment.body.includes('Environment - \`gh-actions-dev\`')
+              comment.body.includes('Environment - \`${{ env.ACTIVE_WORKSPACE }}\`')
             })
 
             // 2. Prepare format of the comment
