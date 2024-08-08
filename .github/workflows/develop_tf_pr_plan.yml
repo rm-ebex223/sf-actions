@@ -1,7 +1,7 @@
 on:
   pull_request:
     types: 
-      [ opened,reopened,synchronize,base_ref_changed ]
+      [ opened,reopened,synchronize,edited ]
     branches:
       - develop
     paths:
