@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add some context
+        env:
+          ACTIVE_WORKSPACE: "gh-actions-prod"
         run: |
           echo github.base_ref: ${{ github.base_ref }}
           echo github.event.pull_request.merged: ${{ github.event.pull_request.merged }}
