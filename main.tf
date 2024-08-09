@@ -1,27 +1,21 @@
+module "LIQUIBASE_TEST" {
+  source        = "./modules/databases"
+  database_name = "LIQUIBASE_TEST"
+  # database_grants = {
+  #   #SYSADMIN = ["USAGE"]
+  # }
+  # schema_info = [ 
+  #   { schema_name = "TEST_STUFF" }
+    #{ schema_name = "MORE_TEST" }
+  ] 
+  #add_liquibase = false
+} 
 
-
-# resource "snowflake_database" "demo_db" {
-#   name    = "DB_DB"
-#   comment = "Database for Snowflake Terraform demo"
-# }
-
-# resource "snowflake_schema" "demo_schema" {
-#   database = snowflake_database.demo_db.name
-#   name     = "DEMO_SCHEMA"
-#   comment  = "Schema for Snowflake Terraform demo"
-# }
-
-# resource "snowflake_database" "demo_db_2" {
-#   name    = "ANOTHER_DEMO_DB"
-#   comment = "Database for Snowflake Terraform demo"
-# }
-
-# resource "snowflake_database" "demo_db_3" {
-#   name    = "MORE_DEMO_DB"
-#   comment = "Database for Snowflake Terraform demo"
-# }
-
-# resource "snowflake_database" "boop" {
-#   name    = "BOOP"
-#   comment = "Database for Snowflake Terraform demo"
+# module "LIQUIBASE_WH" {
+#   source = "./modules/warehouses"
+#   wh_name = "LIQUIBASE_WH"  
+#   wh_grants = {
+#     SYSADMIN = ["USAGE","OPERATE"] ,
+#     LIQUIBASE_DEPLOY = ["USAGE","OPERATE"]
+#   }
 # }
