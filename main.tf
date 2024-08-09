@@ -6,7 +6,7 @@ module "LIQUIBASE_TEST" {
   # }
   # schema_info = [ 
   #   { schema_name = "TEST_STUFF" }
-    #{ schema_name = "MORE_TEST" }
+  #   { schema_name = "MORE_TEST" }
   #] 
   #add_liquibase = false
 } 
