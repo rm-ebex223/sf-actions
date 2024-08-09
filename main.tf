@@ -9,7 +9,7 @@ module "LIQUIBASE_TEST" {
   #   { schema_name = "MORE_TEST" }
   #] 
   #add_liquibase = false
-} 
+}
 
 # module "LIQUIBASE_WH" {
 #   source = "./modules/warehouses"
