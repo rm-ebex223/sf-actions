@@ -62,15 +62,15 @@ jobs:
         env:
           TF_WORKSPACE: ${{ env.ACTIVE_WORKSPACE }}
         run: |
-          terraform init
+          terraform -chdir=./terraform init
 
       - name: Switch workspace
         id: workspace
-        run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
+        run: terraform -chdir=./terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
   
       - name: Terraform format
         id: fmt
-        run: terraform fmt -check
+        run: terraform -chdir=./terraform fmt -check
 
       - name: Terraform validate
         id: validate
@@ -78,7 +78,7 @@ jobs:
     
       - name: Terraform plan
         id: plan
-        run: terraform plan -no-color -compact-warnings
+        run: terraform -chdir=./terraform plan -no-color -compact-warnings
         continue-on-error: true
     
       - name: Check tf plan status
@@ -87,7 +87,7 @@ jobs:
     
       - name: Terraform apply 
         id: apply
-        run: terraform apply -no-color -auto-approve
+        run: terraform -chdir=./terraform apply -no-color -auto-approve
 
       # add the TF apply output to the closed PR for auditing
       - name: Add plan and apply outputs to PR
