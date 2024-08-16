@@ -35,7 +35,7 @@ jobs:
         env:
           TF_WORKSPACE: ${{ env.ACTIVE_WORKSPACE }}
         run: |
-          terraform init
+          terraform -chdir=./terraform init
 
       - name: Switch workspace
         id: workspace
