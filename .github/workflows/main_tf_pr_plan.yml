@@ -35,23 +35,23 @@ jobs:
         env:
           TF_WORKSPACE: ${{ env.ACTIVE_WORKSPACE }}
         run: |
-          terraform init
+          terraform -chdir=./terraform init
 
       - name: Switch workspace
         id: workspace
-        run: terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
+        run: terraform -chdir=./terraform workspace select ${{ env.ACTIVE_WORKSPACE }}
   
       - name: Terraform format check
         id: fmt
-        run: terraform fmt -check
+        run: terraform -chdir=./terraform fmt -check
   
       - name: Terraform validate
         id: validate
-        run: terraform validate -no-color
+        run: terraform -chdir=./terraform validate -no-color
 
       - name: Terraform plan
         id: plan
-        run: terraform plan -no-color -compact-warnings
+        run: terraform -chdir=./terraform plan -no-color -compact-warnings
         continue-on-error: true
 
       - name: Add plan output to PR
